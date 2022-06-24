@@ -40,7 +40,7 @@ const AlbumView = () => {
   const displayAlbum = (data) => {
     return (
       <div>
-        <img src={data.artworkUrl100} />
+        <img src={data.artworkUrl100} alt=""/>
         <h2>{data.collectionName}</h2>
         <h3>{data.artistName}</h3>
       </div>
@@ -50,11 +50,7 @@ const AlbumView = () => {
   return (
     <div>
       {navButtons()}
-      {albumData.length > 0 ? (
-        <h2>{displayAlbum(albumData[0])}</h2>
-      ) : (
-        <h2>Loading...</h2>
-      )}
+      {albumData.length > 0 ? (<h2>{displayAlbum(albumData[0])}</h2>) : (<h2>Loading...</h2>)}
       <hr />
       {renderAlbum}
     </div>
