@@ -1,47 +1,64 @@
-import { useEffect, useState } from 'react'
-import { useParams, useHistory } from 'react-router-dom'
-import Spinner from './Spinner'
+import { useEffect, useState } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 
 const AlbumView = () => {
-    const { id } = useParams()
-    const history = useHistory()
-    const [ albumData, setAlbumData ] = useState([])
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [albumData, setAlbumData] = useState([]);
 
-    useEffect(() => {
-        const API_URL = `http://localhost:4000/song/${id}`
-        const fetchData = async () => {
-            const response = await fetch(API_URL)
-            const resData = await response.json()
-            setAlbumData(resData.results)
-        }
-        fetchData()
-    }, [id])
+  useEffect(() => {
+    const API_URL = `http://localhost:4000/song/${id}`;
+    const fetchData = async () => {
+      const response = await fetch(API_URL);
+      const resData = await response.json();
+      setAlbumData(resData.results);
+    };
+    fetchData();
+  }, [id]);
 
-    const navButtons = () => {
-        return (
-            <div>
-                <button onClick={() => {history.push('/')}}>Home</button> |
-                <button onClick={() => {history.goBack()}}>Back</button>
-            </div>
-        )
-    }
-
-    const allSongs = albumData.filter(entity => entity.kind === 'song')
-    .map((album, i) => {
-        return (
-            <div key={i}>
-                {album.trackName}
-            </div>
-        )
-    })
-
+  const navButtons = () => {
     return (
-        <div>
-            {albumData.length > 0 ? <h2>{albumData[0].collectionName}</h2> : <Spinner />}
-            {navButtons()}
-            {allSongs}
-        </div>
-    )
-}
+      <div>
+        <button onClick={() => navigate("/")}>Home</button> |
+        <button onClick={() => navigate(-1)}>Back</button>
+      </div>
+    );
+  };
 
-export default AlbumView
+  const justSongs = albumData.filter((entry) => entry.wrapperType === "track");
+
+  const renderAlbum = justSongs.map((song, i) => {
+    return (
+      <div key={i}>
+        <Link to={`/song/${song.trackId}`}>
+          <p>{song.trackName}</p>
+        </Link>
+      </div>
+    );
+  });
+
+  const displayAlbum = (data) => {
+    return (
+      <div>
+        <img src={data.artworkUrl100} />
+        <h2>{data.collectionName}</h2>
+        <h3>{data.artistName}</h3>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {navButtons()}
+      {albumData.length > 0 ? (
+        <h2>{displayAlbum(albumData[0])}</h2>
+      ) : (
+        <h2>Loading...</h2>
+      )}
+      <hr />
+      {renderAlbum}
+    </div>
+  );
+};
+
+export default AlbumView;
